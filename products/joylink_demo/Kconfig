@@ -1,0 +1,16 @@
+menu "Joylink"
+config JOYLINK_ENABLE
+	bool "Enabe Joylink"
+	default y
+
+config JOYLINK_SMNT_BUTTON_NUM
+    int "the io number for configure network"
+    default 14
+	depends on JOYLINK_ENABLE
+    
+config JOYLINK_RESET_BUTTON_NUM
+    int "the io number for reset"
+    default 15
+	depends on JOYLINK_ENABLE
+
+endmenu
