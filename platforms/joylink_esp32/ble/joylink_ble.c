@@ -586,7 +586,7 @@ static int joy_operate_read_handler(uint8_t *cmd)
     seq = *(cmd + JOY_OFFSET_FULLPACKET_SEQ);
     operate = *(cmd + JOY_OFFSET_FULLPACKET_OPERATE);
     length = *(uint16_t *)(cmd + JOY_OFFSET_FULLPACKET_LENGTH);
-    ESP_LOGE(GATTS_TAG, "%s rev data:seq=%x,operate=%x,length=%2x\n", __func__,seq,operate,length);
+    ESP_LOGI(GATTS_TAG, "%s rev data:seq=%x,operate=%x,length=%2x\n", __func__,seq,operate,length);
 
     if((operate != JOY_OPERATE_ID_PRD) || (length > (JOY_SDK_BUFF_LEN - 6))){
         ESP_LOGE(GATTS_TAG, "%s operate or length error\n", __func__);
@@ -647,7 +647,7 @@ static int joy_operate_read_handler(uint8_t *cmd)
         if(buflen < JOY_SDK_BUFF_LEN){
             /*memset(joy_sdk_buff,0,sizeof(joy_sdk_buff));
 			memcpy(joy_sdk_buff,joy_sdk_sendbuf,buflen);*/
-            ESP_LOGE(GATTS_TAG, "%s [INFO]send buf len = %d, joy_adv_manufacture[12]&0x0f = 0x%02x\r\n", __func__,buflen, joy_adv_manufacture[12]&0x0f);
+            ESP_LOGI(GATTS_TAG, "%s [INFO]send buf len = %d, joy_adv_manufacture[12]&0x0f = 0x%02x\r\n", __func__,buflen, joy_adv_manufacture[12]&0x0f);
 
             switch(joy_adv_manufacture[12]&0x0f)
             {
@@ -703,7 +703,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
     seq = *(cmd + JOY_OFFSET_FULLPACKET_SEQ);
     operate = *(cmd + JOY_OFFSET_FULLPACKET_OPERATE);
     length = *(uint16_t *)(cmd + JOY_OFFSET_FULLPACKET_LENGTH);
-    ESP_LOGE(GATTS_TAG, "%s rev data:seq=%x,operate=%x,length=%2x,conent:\n", __func__,seq,operate,length);
+    ESP_LOGI(GATTS_TAG, "%s rev data:seq=%x,operate=%x,length=%2x,conent:\n", __func__,seq,operate,length);
 
     if(length > (JOY_SDK_BUFF_LEN - 6)){
         ESP_LOGE(GATTS_TAG, "%s operate or length error\n", __func__);
@@ -713,7 +713,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
 
     if(operate == JOY_OPERATE_ID_PWD_WITHRES)
     {
-        ESP_LOGE(GATTS_TAG, "%s init send buffer\n", __func__);
+        ESP_LOGI(GATTS_TAG, "%s init send buffer\n", __func__);
         memset(joy_sdk_sendbuf,0,sizeof(joy_sdk_sendbuf));
         *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ)		= seq;
         *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE)	= JOY_OPERATE_ID_DRWRES;
@@ -739,7 +739,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
                     joy_sdk_ssid_rev[tag_lc -1 -t] = convert_buf[t];
                 }
                 value_response = JOY_RESPONSE_OK;
-                ESP_LOGE(GATTS_TAG, "%s rev ssidlen = %x,ssid = %s\n", __func__,tag_lc,joy_sdk_ssid_rev);
+                ESP_LOGI(GATTS_TAG, "%s rev ssidlen = %x,ssid = %s\n", __func__,tag_lc,joy_sdk_ssid_rev);
             }else{
                 value_response = JOY_RESPONSE_ERROR1;
             }
@@ -774,7 +774,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
                 try_to_start_wifi = 1;
                 //joy_change_adv_wifistatus(wifi_connecting);
                 //operate_stop_gatts = 1;
-                ESP_LOGE(GATTS_TAG, "%s rev pwdlen = %x,pwd = %s\n", __func__,tag_lc,joy_sdk_pwd_rev);
+                ESP_LOGI(GATTS_TAG, "%s rev pwdlen = %x,pwd = %s\n", __func__,tag_lc,joy_sdk_pwd_rev);
             }else{
                 value_response = JOY_RESPONSE_ERROR1;
             }
@@ -801,7 +801,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
             }else{
                 uint8_t value_ctl;
                 value_ctl = cmd[offset];
-                ESP_LOGE(GATTS_TAG, "%s rev JOY_PROPERTY_TAG_BLE_DEV_CTL tag with value :%d\n", __func__,value_ctl);
+                ESP_LOGI(GATTS_TAG, "%s rev JOY_PROPERTY_TAG_BLE_DEV_CTL tag with value :%d\n", __func__,value_ctl);
                 if(value_ctl == 0x01 ){
                     //disconnect ble and enter to broadcast status
                     joy_set_ble_broadcast_flag(broadcast_enble);
@@ -877,7 +877,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
         buflen = length_sendconetent + 4 + 2;
 
         if(buflen < JOY_SDK_BUFF_LEN){
-            ESP_LOGE(GATTS_TAG, "%s [INFO]send buf len = %x data,%d:\n", __func__,buflen,joy_gatts_ctl_status.is_indicatedata_now);
+            ESP_LOGI(GATTS_TAG, "%s [INFO]send buf len = %x data,%d:\n", __func__,buflen,joy_gatts_ctl_status.is_indicatedata_now);
             int ret = -1;
             switch(joy_adv_manufacture[12]&0x0f)
             {
@@ -901,7 +901,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
                 joy_gatts_ctl_status.is_indicatedata_now = 0;
             }
         }else{
-            ESP_LOGE(GATTS_TAG, "%s no need to response\n", __func__);
+            ESP_LOGI(GATTS_TAG, "%s no need to response\n", __func__);
         }
     }
     /*
@@ -910,7 +910,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
 								gl_profile_tab.conn_id);
 	}*/
     if(try_to_start_wifi == 1){
-        ESP_LOGE(GATTS_TAG, "%s ----------start wifi-------------\n", __func__);
+        ESP_LOGI(GATTS_TAG, "%s ----------start wifi-------------\n", __func__);
         joylink_wifi_save_info(joy_sdk_ssid_rev,joy_sdk_pwd_rev);
         if (jd_innet_timer_task_handle != NULL) {
             jd_innet_timer_task_flag = true;
@@ -938,7 +938,7 @@ static int joylink_operate_response_handler(uint8_t *cmd)
     }
 
     length = *(uint16_t *)(cmd + JOY_OFFSET_FULLPACKET_LENGTH);
-    ESP_LOGE(GATTS_TAG, "%s rev response data,length=%2x,conent:\n", __func__,length);
+    ESP_LOGI(GATTS_TAG, "%s rev response data,length=%2x,conent:\n", __func__,length);
 
     if(length > (JOY_SDK_BUFF_LEN - 6)){
         ESP_LOGE(GATTS_TAG, "%s operate or length error\n", __func__);
@@ -954,7 +954,7 @@ static int joylink_operate_response_handler(uint8_t *cmd)
             offset +=  JOY_SIZE_FULLPACKET_TAG;
             tag_lc = cmd[offset];
             offset+= JOY_SIZE_FULLPACKET_TAGLEN;
-            ESP_LOGE(GATTS_TAG, "%s receive JOY_PROPERTY_TAG_WIFI_STATUS response\n", __func__);
+            ESP_LOGI(GATTS_TAG, "%s receive JOY_PROPERTY_TAG_WIFI_STATUS response\n", __func__);
             offset +=tag_lc;
             break;
         default:
@@ -1005,7 +1005,7 @@ static int joy_notify_wifi_status(type_wifi_status sta)
     buflen = length_sendconetent + 4 + 2;
 
     if(buflen < JOY_SDK_BUFF_LEN){
-        ESP_LOGE(GATTS_TAG, "%s [INFO]send buf len = %x data:\n", __func__,buflen);
+        ESP_LOGI(GATTS_TAG, "%s [INFO]send buf len = %x data:\n", __func__,buflen);
 
         switch(joy_adv_manufacture[12]&0x0f)
         {
@@ -1050,7 +1050,7 @@ void joy_handler_task(void* arg)
             {
                 uint8_t operate_id;
                 operate_id = *(joy_sdk_recv_buff+JOY_OFFSET_FULLPACKET_OPERATE);
-                ESP_LOGE(GATTS_TAG, "%s rev full operate = %x\n", __func__,operate_id);
+                ESP_LOGI(GATTS_TAG, "%s rev full operate = %x\n", __func__,operate_id);
 
                 switch(operate_id){
                 case JOY_OPERATE_ID_PRD:
@@ -1082,7 +1082,7 @@ void joy_handler_task(void* arg)
             {
                 uint8_t test_sendbuf[20] = {0x89};
                 jh_send(test_sendbuf);
-                ESP_LOGE(GATTS_TAG, "%s indicate send finish\n", __func__);
+                ESP_LOGI(GATTS_TAG, "%s indicate send finish\n", __func__);
             }
         }
     }
@@ -1098,7 +1098,7 @@ void joy_data_resend_task(void* arg)
             if(cmd_id == JOY_RESENDTASK_RESENDWIFISTATUS)
             {
                 int ret = joy_notify_wifi_status(joy_get_wifi_status());
-                ESP_LOGE(GATTS_TAG, "%s-------------resend wifi status:%d\n", __func__,ret);
+                ESP_LOGI(GATTS_TAG, "%s-------------resend wifi status:%d\n", __func__,ret);
 
                 if(ret == -2){
                     uint16_t cmd = JOY_RESENDTASK_RESENDWIFISTATUS;
@@ -1142,10 +1142,10 @@ esp_err_t esp_joylink_wifi_event_handler(void *ctx, system_event_t *event)
 
     switch(event->event_id) {
     case SYSTEM_EVENT_STA_START:
-        ESP_LOGE(GATTS_TAG, "%s ++++++++++++++SYSTEM_EVENT_STA_START+++++++++++++\n", __func__);
+        ESP_LOGI(GATTS_TAG, "%s ++++++++++++++SYSTEM_EVENT_STA_START+++++++++++++\n", __func__);
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
-        ESP_LOGE(GATTS_TAG, "%s ++++++++++++++wifi connected+++++++++++++\n", __func__);
+        ESP_LOGI(GATTS_TAG, "%s ++++++++++++++wifi connected+++++++++++++\n", __func__);
         
         // esp_wifi_set_promiscuous(0);
         joy_set_wifi_status(wifi_connected);
@@ -1174,7 +1174,7 @@ esp_err_t esp_joylink_wifi_event_handler(void *ctx, system_event_t *event)
                     joy_change_adv_wifistatus(joy_get_wifi_status());
                     joylink_gatts_adv_data_enable();
                 }
-                ESP_LOGE(GATTS_TAG, "try to connect wifi\n");
+                ESP_LOGI(GATTS_TAG, "try to connect wifi\n");
                 esp_wifi_connect();
             } else {
                 void jd_innet_start_task(void);
@@ -1201,7 +1201,7 @@ static void gatts_start_wifi_connect(void)
 
     esp_wifi_set_promiscuous(0);
     // esp_wifi_disconnect();
-    ESP_LOGE(GATTS_TAG, "%s Setting WiFi configuration SSID %s...start to connect\n", __func__,wifi_config.sta.ssid);
+    ESP_LOGI(GATTS_TAG, "%s Setting WiFi configuration SSID %s...start to connect\n", __func__,wifi_config.sta.ssid);
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_connect() );
@@ -1242,7 +1242,7 @@ int jh_send(uint8_t* frame)
 {
     if(joy_get_ble_connect_status() == ble_connect){
         joy_gatts_ctl_status.is_indicatedata_now = 1;
-        ESP_LOGE(GATTS_TAG, "%s gatts_if=%2x,conn_id = %2x,attr_handle=%2x\n", __func__,
+        ESP_LOGI(GATTS_TAG, "%s gatts_if=%2x,conn_id = %2x,attr_handle=%2x\n", __func__,
                 gl_profile_tab.gatts_if,
                 gl_profile_tab.conn_id,
                 gl_profile_tab.charindicate_handle);

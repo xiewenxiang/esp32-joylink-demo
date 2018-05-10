@@ -57,6 +57,12 @@ extern void joylink_ble_init(void);
 extern void joylink_gatts_adv_data_enable(void);
 void joylink_entry_net_config(void);
 
+static void joylink_main_task(void *pvParameters)
+{
+    joylink_main_start();
+    vTaskDelete(NULL);
+}
+
 static void joylink_task(void *pvParameters)
 {
     nvs_handle out_handle;
@@ -66,8 +72,8 @@ static void joylink_task(void *pvParameters)
 
     esp_wifi_set_mode(WIFI_MODE_STA);
     if (esp_joylink_get_config_network()) {
-    	esp_joylink_set_config_network(false);
-    	joylink_entry_net_config();
+        esp_joylink_set_config_network(false);
+        joylink_entry_net_config();
     } else {
 		if (nvs_open("joylink_wifi", NVS_READONLY, &out_handle) == ESP_OK) {
 			memset(&config,0x0,sizeof(config));
@@ -99,8 +105,6 @@ static void joylink_task(void *pvParameters)
 		   joylink_entry_net_config();
 		}
     }
-
-    joylink_main_start();
 
     vTaskDelete(NULL);
 }
@@ -210,7 +214,8 @@ void joylink_entry_net_config(void)
 
 void esp_joylink_app_start(void)
 {
-	joylink_ble_init();
-    xTaskCreate(joylink_task, "jl_task", 1024*10, NULL, 2, NULL);
+    xTaskCreate(joylink_main_task, "joylink_main_task", 1024*10, NULL, 2, NULL);
+    joylink_ble_init();
+    xTaskCreate(joylink_task, "jl_task", 1024, NULL, 1, NULL);
 }
 
