@@ -725,7 +725,7 @@ joylink_proc_server_ota_upload(uint8_t* json)
  * @Returns: 
  */
 int
-joylink_server_recv(char fd, char *rec_buff, int max)
+joylink_server_recv(int fd, char *rec_buff, int max)
 {
     JLPacketHead_t head;
     bzero(&head, sizeof(head));
