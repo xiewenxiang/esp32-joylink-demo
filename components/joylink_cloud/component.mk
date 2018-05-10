@@ -67,6 +67,6 @@ COMPONENT_OBJS += $(addprefix adaptation/$(JOYLINK_SDK)/,$(JOYLINK_SDK_C_FILES:%
 COMPONENT_OBJS += $(addprefix adaptation/$(JOYLINK_SMNT)/,$(JOYLINK_SMNT_C_FILES:%.c=%.o))
 
 
-CFLAGS += -D__LINUX_UB2__ -D__LINUX__ 
+CFLAGS += -D__LINUX_UB2__ -D__LINUX__  -DJLdevice_aes_decrypt=device_aes_decrypt -D_GET_HOST_BY_NAME_
 CFLAGS += -Wno-error=unused-label -Wno-error=maybe-uninitialized -Wno-error=implicit-function-declaration -Wno-error=pointer-sign -Wno-error=char-subscripts -Wno-error=sizeof-pointer-memaccess
 endif

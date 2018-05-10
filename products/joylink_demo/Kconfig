@@ -13,4 +13,16 @@ config JOYLINK_RESET_BUTTON_NUM
     default 15
 	depends on JOYLINK_ENABLE
 
+config JOYLINK_DEVICE_UUID
+    string "The device uuid, you can get it from Joylink"
+        depends on JOYLINK_ENABLE
+
+config JOYLINK_SMNT_AES_KEY
+    string "The secret key for smnt, you can get it from Joylink"
+        depends on JOYLINK_ENABLE
+
+config JOYLINK_PUBLIC_KEY
+    string "The public key, you can get it from Joylink"
+        depends on JOYLINK_ENABLE
+
 endmenu

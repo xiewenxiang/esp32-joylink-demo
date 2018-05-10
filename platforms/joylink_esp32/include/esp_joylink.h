@@ -7,6 +7,8 @@
 #include "esp_bt.h"
 #include "esp_gatts_api.h"
 
+#define JOYLINK_VERSION     _VERSION_
+#define JOYLINK_COMMIT_ID   _GIT_HEAD_
 // start joylink app
 void esp_joylink_app_start(void);
 

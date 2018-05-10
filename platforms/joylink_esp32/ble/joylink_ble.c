@@ -23,9 +23,8 @@
 #include "esp_wifi.h"
 #include "esp_system.h"
 
-#include "bt.h"
-#include "bta_api.h"
-
+#include "esp_bt.h"
+#include "esp_log.h"
 #include "esp_bt_device.h"
 #include "esp_gap_ble_api.h"
 #include "esp_gatts_api.h"
@@ -1217,8 +1216,6 @@ static void joy_gatts_ctl_init(void)
 
 void joylink_ble_init(void)
 {
-    esp_err_t ret;
-
     joy_set_wifi_status(wifi_disconnect);
 
     jl_init(joy_sdk_buff,JOY_SDK_BUFF_LEN, joy_sdk_recv_buff, JOY_SDK_RECV_BUFF_LEN);
