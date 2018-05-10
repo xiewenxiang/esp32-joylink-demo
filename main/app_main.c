@@ -41,6 +41,7 @@
 #include "esp_gatts_api.h"
 #include "esp_bt_main.h"
 
+#include "apps/sntp/sntp.h"
 
 #include "nvs.h"
 #include "nvs_flash.h"
@@ -54,8 +55,6 @@
 #define PROFILE_NUM 1
 #define PROFILE_JD_APP_ID 0
 
-
-#define JOYLINK_VERSION "v1.0.3"
 
 struct gatts_profile_inst {
     esp_gatts_cb_t gatts_cb;
@@ -184,9 +183,16 @@ static void initialise_key(void)
     button_dev_add_tap_cb(BUTTON_PUSH_CB, joylink_button_reset_tap_cb, "PUSH", 50 / portTICK_PERIOD_MS, btn_handle);
 }
 
+static void initialize_sntp(void)
+{
+    ESP_LOGI(TAG, "Initializing SNTP");
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setservername(0, "pool.ntp.org");
+    sntp_init();
+}
+
 void app_main(void)
 {
-    JLDevice_t* dev = NULL;
     printf("================== ESPRESSIF ===================\n");
     printf("    ESP_IDF VERSION: %s\n",esp_get_idf_version());
     printf("    JOYLINK VERSION: %s(%s)\n",JOYLINK_VERSION,JOYLINK_COMMIT_ID);
@@ -194,39 +200,9 @@ void app_main(void)
     printf("================================================\n");
     nvs_flash_init();
     initialise_wifi();
-
+	initialize_sntp();
     initialise_key();
     initialise_ble();
-
-    dev = (JLDevice_t*)malloc(sizeof(JLDevice_t));
-    if (!dev) {
-        printf("alloc device fail\n");
-    }
-
-    memset(dev,0x0,sizeof(JLDevice_t));
-
-    dev->local_port = 4320,
-    dev->jlp.version = 1;
-    dev->jlp.devtype = E_JLDEV_TYPE_NORMAL;
-    strncpy(dev->jlp.joylink_server,"live.smart.jd.com",sizeof(dev->jlp.joylink_server));
-    dev->jlp.server_port = 2002;
-    strncpy(dev->jlp.CID,"011c022b",sizeof(dev->jlp.CID));
-    strncpy(dev->jlp.firmwareVersion,"001",sizeof(dev->jlp.firmwareVersion));
-    strncpy(dev->jlp.modelCode,"A1",sizeof(dev->jlp.modelCode));
-    strncpy(dev->jlp.uuid,"CF1484",sizeof(dev->jlp.uuid));
-    // strncpy(dev->jlp.secret_key,"K8AG43A6M4BN6PAG",sizeof(dev->jlp.secret_key));
-    strncpy(dev->idt.cloud_pub_key,"03D5A54ACF235E77FC1240754DB26BC0E20949E5A3C68338A635CA646EC336D1D9",sizeof(dev->idt.cloud_pub_key));
-    dev->jlp.lancon = E_LAN_CTRL_ENABLE;
-    dev->jlp.cmd_tran_type = E_CMD_TYPE_JSON;
-    
-    // dev->joylink_ble_secret_level = 0x02;
-
-    if (!esp_joylink_register_device_info(dev)) {
-        free(dev);
-        printf("device register fail\n");
-        return;
-    }
-    free(dev);
 
     esp_joylink_app_start();
 }
