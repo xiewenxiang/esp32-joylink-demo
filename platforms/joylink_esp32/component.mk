@@ -14,6 +14,6 @@ COMPONENT_ADD_LDFLAGS += -L $(COMPONENT_PATH)/lib \
 			 
 # SRCDIRS := app ble extern jdinnet
 
-COMPONENT_SRCDIRS := app ble extern jdinnet
+COMPONENT_SRCDIRS := app ble extern jdinnet softap
 
 

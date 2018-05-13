@@ -69,11 +69,17 @@ static void joylink_task(void *pvParameters)
     wifi_config_t config;
     size_t size = 0;
     bool flag = false;
-
+    esp_joylink_config_network_t config_mode = esp_joylink_get_config_network();
+	ets_printf("config_mode=%d\r\n",config_mode);
     esp_wifi_set_mode(WIFI_MODE_STA);
-    if (esp_joylink_get_config_network()) {
-        esp_joylink_set_config_network(false);
-        joylink_entry_net_config();
+    if ((config_mode > ESP_JOYLINK_CONFIG_NETWORK_NONE) && (config_mode <= ESP_JOYLINK_CONFIG_NETWORK_MAX)) {
+        esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_NONE);
+        
+        if ((config_mode == ESP_JOYLINK_CONFIG_NETWORK_SMNT_BLE) || (config_mode == ESP_JOYLINK_CONFIG_NETWORK_SMNT)) {
+            joylink_entry_net_config();
+        } else if (config_mode == ESP_JOYLINK_CONFIG_NETWORK_SOFTAP) {
+            esp_joylink_softap_innet();
+        }
     } else {
 		if (nvs_open("joylink_wifi", NVS_READONLY, &out_handle) == ESP_OK) {
 			memset(&config,0x0,sizeof(config));
@@ -120,7 +126,7 @@ void esp_joylink_wifi_clear_info(void)
     }
 }
 
-void joylink_wifi_save_info(uint8_t*ssid,uint8_t*password)
+void esp_joylink_wifi_save_info(uint8_t*ssid,uint8_t*password)
 {
     nvs_handle out_handle;
     char data[65];
@@ -204,7 +210,7 @@ void joylink_delay_10_min_timer_for_10_min_stop(void)
 
 void joylink_entry_net_config(void)
 {
-    printf("--joylink net config\r\n");
+    ets_printf("--joylink net config\r\n");
     joylink_net_configuaring = true;
     joylink_delay_10_min_timer_for_10_min_start();
     joylink_gatts_adv_data_enable();
@@ -216,6 +222,6 @@ void esp_joylink_app_start(void)
 {
     xTaskCreate(joylink_main_task, "joylink_main_task", 1024*10, NULL, 2, NULL);
     joylink_ble_init();
-    xTaskCreate(joylink_task, "jl_task", 1024, NULL, 1, NULL);
+    xTaskCreate(joylink_task, "jl_task", 2048, NULL, 1, NULL);
 }
 

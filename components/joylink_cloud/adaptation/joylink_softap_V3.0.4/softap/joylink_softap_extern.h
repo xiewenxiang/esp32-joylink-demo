@@ -1,13 +1,19 @@
 #ifndef _JOYLINK_EXTERN_H_
 #define _JOYLINK_EXTERN_H_
 
+#include "sdkconfig.h"
+
 /**/
-#define SOFTAP_PACKET_HEAD				"JYAP"					//packet head
-#define	SOFTAP_PUID						"UJKK5C"				//puid
-#define SOFTAP_BRAND					"38C4"					//brand 
-#define SOFTAP_CID						"09A5"					//cid
+#define SOFTAP_PACKET_HEAD				CONFIG_JOYLINK_SOFTAP_PACKET_HEAD // "JYAP"					//packet head
+#define	SOFTAP_PUID						CONFIG_JOYLINK_DEVICE_UUID // "UJKK5C"				//puid
+#define SOFTAP_BRAND					CONFIG_JOYLINK_DEVICE_BRAND // "38C4"					//brand 
+#define SOFTAP_CID						CONFIG_JOYLINK_DEVICE_CID // "09A5"					//cid
 
 #define printf_high		printf		//the printf function
+#define aes_cbc_decrypt                 esp_aes_cbc_decrypt
+#define aes_cbc_encrypt                 esp_aes_cbc_encrypt
+#define udp_send                        esp_udp_send
+
 /*
 Routine Description:
     udp send function which is provided by the system.
