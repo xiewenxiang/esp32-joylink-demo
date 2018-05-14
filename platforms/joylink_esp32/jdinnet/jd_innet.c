@@ -17,6 +17,7 @@
 
 #include "joylink_smnt.h"
 
+#include "esp_joylink.h"
 
 #include "joylink_log.h"
 #include "nvs.h"
@@ -26,7 +27,6 @@
 
 xTaskHandle jd_innet_timer_task_handle = NULL;
 bool jd_innet_timer_task_flag = false;
-void joylink_wifi_save_info(uint8_t*ssid,uint8_t*password);
 void joylink_delay_3_min_timer_for_adv(void);
 
 
@@ -86,7 +86,7 @@ void esp_get_result_callback(joylink_smnt_result_t result)
                 esp_wifi_set_promiscuous(0);
 				esp_wifi_set_promiscuous_rx_cb(NULL);
                 // save flash
-                joylink_wifi_save_info(config.sta.ssid,config.sta.password);
+                esp_joylink_wifi_save_info(config.sta.ssid,config.sta.password);
                 //ble delay 3 min
                 joylink_delay_3_min_timer_for_adv();
 				// joylink_smnt_release();

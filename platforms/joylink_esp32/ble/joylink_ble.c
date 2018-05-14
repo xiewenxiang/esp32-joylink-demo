@@ -235,7 +235,6 @@ static struct gatts_profile_inst gl_profile_tab = {
 struct gatts_ctl_status joy_gatts_ctl_status;
     
 int jh_send(uint8_t* frame);
-void joylink_wifi_save_info(uint8_t*ssid,uint8_t*password);
 void joylink_delay_10_min_timer_for_10_min_stop(void);
 extern bool joylink_net_configuaring;
 
@@ -388,11 +387,8 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         jl_indication_confirm_cb();
         ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT:receive confirm\n");
 
-        // if (joy_gatts_ctl_status.test_mode == true) {
-        //     esp_ble_gatts_close(gatts_if,param->conf.conn_id);
-        // }
         if (joy_gatts_ctl_status.test_mode == true) {
-        	esp_joylink_set_config_network(true);
+        	esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SMNT_BLE);
         }
         break;
     case ESP_GATTS_CREATE_EVT:
@@ -911,7 +907,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
 	}*/
     if(try_to_start_wifi == 1){
         ESP_LOGI(GATTS_TAG, "%s ----------start wifi-------------\n", __func__);
-        joylink_wifi_save_info(joy_sdk_ssid_rev,joy_sdk_pwd_rev);
+        esp_joylink_wifi_save_info (joy_sdk_ssid_rev,joy_sdk_pwd_rev);
         if (jd_innet_timer_task_handle != NULL) {
             jd_innet_timer_task_flag = true;
         }

@@ -5,8 +5,8 @@ Copyright (c) 2015-2050, JD Smart All rights reserved.
 *************************************/
 
 
-#ifndef _JOYLINK_H_
-#define _JOYLINK_H_
+#ifndef _JOYLINK_SOFTAP_H_
+#define _JOYLINK_SOFTAP_H_
 #include "joylink_head.h"
 #define SIZE_SSID		32
 #define SIZE_PASSWORD	64

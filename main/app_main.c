@@ -163,10 +163,17 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
 
+static void joylink_button_softap_tap_cb(void* arg)
+{
+	// printf("%s\r\n",__func__);
+    esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SOFTAP);
+    esp_restart();
+}
 
 static void joylink_button_smnt_tap_cb(void* arg)
 {
-    esp_joylink_set_config_network(true);
+	// printf("%s\r\n",__func__);
+    esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SMNT_BLE);
     esp_restart();
 }
 
@@ -182,6 +189,8 @@ static void initialise_key(void)
     button_dev_add_tap_cb(BUTTON_PUSH_CB, joylink_button_smnt_tap_cb, "PUSH", 50 / portTICK_PERIOD_MS, btn_handle);
     btn_handle = button_dev_init(CONFIG_JOYLINK_RESET_BUTTON_NUM, 0, BUTTON_ACTIVE_LOW);
     button_dev_add_tap_cb(BUTTON_PUSH_CB, joylink_button_reset_tap_cb, "PUSH", 50 / portTICK_PERIOD_MS, btn_handle);
+    btn_handle = button_dev_init(CONFIG_JOYLINK_SOFTAP_BUTTON_NUM, 0, BUTTON_ACTIVE_LOW);
+    button_dev_add_tap_cb(BUTTON_PUSH_CB, joylink_button_softap_tap_cb, "PUSH", 50 / portTICK_PERIOD_MS, btn_handle);
 }
 
 static void initialize_sntp(void)
@@ -201,7 +210,7 @@ void app_main(void)
     printf("================================================\n");
     nvs_flash_init();
     initialise_wifi();
-	initialize_sntp();
+	// initialize_sntp();
     initialise_key();
     initialise_ble();
 

@@ -603,39 +603,46 @@ joylink_dev_ota_status_upload()
 }
 
 
-bool esp_joylink_get_config_network(void)
+esp_joylink_config_network_t esp_joylink_get_config_network(void)
 {
 	nvs_handle out_handle;
 	uint8_t config_network;
 	if (nvs_open(JOYLINK_NVS_CONFIG_NETWORK, NVS_READONLY, &out_handle) != ESP_OK) {
-		return false;
+		return ESP_JOYLINK_CONFIG_NETWORK_NONE;
 	}
 
 	if (nvs_get_u8(out_handle,"config_network",&config_network) != ESP_OK) {
 		log_debug("--get config_network fail");
-		return false;
+		return ESP_JOYLINK_CONFIG_NETWORK_NONE;
 	}
 
 	nvs_close(out_handle);
-
-	if (config_network == 1) {
-		return true;
-	}
-	return false;;
+	ets_printf("esp_joylink_get_config_network:%d\r\n",config_network);
+	if ((config_network >= ESP_JOYLINK_CONFIG_NETWORK_NONE)
+            && (config_network <= ESP_JOYLINK_CONFIG_NETWORK_MAX)) {
+        return config_network;
+    }
+    
+	return ESP_JOYLINK_CONFIG_NETWORK_NONE;;
 }
-void esp_joylink_set_config_network(bool config_network)
+void esp_joylink_set_config_network(esp_joylink_config_network_t config_network)
 {
 	nvs_handle out_handle;
+    
+    if ((config_network < ESP_JOYLINK_CONFIG_NETWORK_NONE)
+       || (config_network > ESP_JOYLINK_CONFIG_NETWORK_MAX)) {
+        return;
+    }
 	if (nvs_open(JOYLINK_NVS_CONFIG_NETWORK, NVS_READWRITE, &out_handle) != ESP_OK) {
 		return;
 	}
 
-	if (nvs_set_u8(out_handle,"config_network",config_network?1:0) != ESP_OK) {
+	if (nvs_set_u8(out_handle,"config_network",config_network) != ESP_OK) {
 		log_debug("--set config_network fail");
 		return;
 	}
 	nvs_close(out_handle);
-
+	ets_printf("esp_joylink_set_config_network:%d\r\n",config_network);
 	if (config_network) {
 		esp_restart();
 		for(;;){

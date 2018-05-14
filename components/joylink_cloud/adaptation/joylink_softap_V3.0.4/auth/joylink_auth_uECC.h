@@ -12,6 +12,26 @@ Copyright (c) 2015-2050, JD Smart All rights reserved.
 
 #include "stdint.h"
 
+#include "stdio.h"
+
+#define printf_high             printf
+
+#define uECC_set_rng            esp_uECC_set_rng
+#define uECC_make_key           esp_uECC_make_key
+#define uECC_compress           esp_uECC_compress
+#define uECC_decompress         esp_uECC_decompress
+#define uECC_valid_public_key   esp_uECC_valid_public_key
+#define uECC_compute_public_key esp_uECC_compute_public_key
+#define uECC_sign               esp_uECC_sign
+#define uECC_sign_deterministic esp_uECC_sign_deterministic
+#define uECC_verify             esp_uECC_verify
+#define uECC_shared_secret      esp_uECC_shared_secret
+
+#define uECC_valid_point        esp_uECC_valid_point
+#define uECC_secp160r1          esp_uECC_secp160r1
+#define uECC_secp256r1          esp_uECC_secp256r1
+
+#define joylink_util_byte2hexstr   esp_joylink_util_byte2hexstr
 /* Platform selection options.
 If uECC_PLATFORM is not defined, the code will try to guess it based on compiler macros.
 Possible values for uECC_PLATFORM are defined below: */

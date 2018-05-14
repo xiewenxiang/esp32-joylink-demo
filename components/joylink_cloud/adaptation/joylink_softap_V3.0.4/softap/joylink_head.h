@@ -1,7 +1,7 @@
 #ifndef _JOYLINK_HEAD_H_
 #define _JOYLINK_HEAD_H_
 /* Boolean Type */
-typedef unsigned char        				bool;
+// typedef unsigned char        				bool;
 
 typedef char                       	int8,   *pint8,  *pchar;
 typedef short                      	int16, *pint16;
