@@ -1,4 +1,4 @@
-// Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
+// Copyright 2015-2020 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,6 @@ static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {
         .app_id   = PROFILE_JD_APP_ID,
     }
 };
-
 
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
@@ -145,7 +144,6 @@ void initialise_ble(void)
 	
 }
 
-
 esp_err_t event_handler(void *ctx, system_event_t *event)
 {
      return esp_joylink_wifi_event_handler(ctx,event);
@@ -165,14 +163,12 @@ static void initialise_wifi(void)
 
 static void joylink_button_softap_tap_cb(void* arg)
 {
-	// printf("%s\r\n",__func__);
     esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SOFTAP);
     esp_restart();
 }
 
 static void joylink_button_smnt_tap_cb(void* arg)
 {
-	// printf("%s\r\n",__func__);
     esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SMNT_BLE);
     esp_restart();
 }
@@ -210,7 +206,7 @@ void app_main(void)
     printf("================================================\n");
     nvs_flash_init();
     initialise_wifi();
-	// initialize_sntp();
+	initialize_sntp();
     initialise_key();
     initialise_ble();
 

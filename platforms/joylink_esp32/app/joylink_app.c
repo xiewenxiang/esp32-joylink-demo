@@ -1,4 +1,4 @@
-// Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
+// Copyright 2015-2020 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
-/****************************************************************************
-*
-* This file is for gatt client. It can scan ble device, connect one device,
-*
-****************************************************************************/
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -70,7 +63,7 @@ static void joylink_task(void *pvParameters)
     size_t size = 0;
     bool flag = false;
     esp_joylink_config_network_t config_mode = esp_joylink_get_config_network();
-	ets_printf("config_mode=%d\r\n",config_mode);
+    ets_printf("config_mode=%d\r\n",config_mode);
     esp_wifi_set_mode(WIFI_MODE_STA);
     if ((config_mode > ESP_JOYLINK_CONFIG_NETWORK_NONE) && (config_mode <= ESP_JOYLINK_CONFIG_NETWORK_MAX)) {
         esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_NONE);
@@ -81,41 +74,39 @@ static void joylink_task(void *pvParameters)
             esp_joylink_softap_innet();
         }
     } else {
-		if (nvs_open("joylink_wifi", NVS_READONLY, &out_handle) == ESP_OK) {
-			memset(&config,0x0,sizeof(config));
-			size = sizeof(config.sta.ssid);
-			if (nvs_get_str(out_handle,"ssid",(char*)config.sta.ssid,&size) == ESP_OK) {
-				if (size > 0) {
-					size = sizeof(config.sta.password);
-					if (nvs_get_str(out_handle,"password",(char*)config.sta.password,&size) == ESP_OK) {
-						flag = true;
-					} else {
-						printf("--get password fail");
-					}
-				}
-			} else {
-				printf("--get ssid fail");
-			}
+        if (nvs_open("joylink_wifi", NVS_READONLY, &out_handle) == ESP_OK) {
+            memset(&config,0x0,sizeof(config));
+            size = sizeof(config.sta.ssid);
+            if (nvs_get_str(out_handle,"ssid",(char*)config.sta.ssid,&size) == ESP_OK) {
+                if (size > 0) {
+                    size = sizeof(config.sta.password);
+                    if (nvs_get_str(out_handle,"password",(char*)config.sta.password,&size) == ESP_OK) {
+                        flag = true;
+                    } else {
+                        printf("--get password fail");
+                    }
+                }
+            } else {
+                printf("--get ssid fail");
+            }
 
-			nvs_close(out_handle);
-		}
+            nvs_close(out_handle);
+        }
 
-		if (flag) {
-		   esp_wifi_set_config(ESP_IF_WIFI_STA,&config);
-		   esp_wifi_connect();
+        if (flag) {
+           esp_wifi_set_config(ESP_IF_WIFI_STA,&config);
+           esp_wifi_connect();
 
-		   joylink_net_configuaring = true;
-		   joylink_delay_10_min_timer_for_10_min_start();
-		   joylink_gatts_adv_data_enable();
-		} else {
-		   joylink_entry_net_config();
-		}
+           joylink_net_configuaring = true;
+           joylink_delay_10_min_timer_for_10_min_start();
+           joylink_gatts_adv_data_enable();
+        } else {
+           joylink_entry_net_config();
+        }
     }
 
     vTaskDelete(NULL);
 }
-
-
 
 void esp_joylink_wifi_clear_info(void)
 {
@@ -148,13 +139,11 @@ void esp_joylink_wifi_save_info(uint8_t*ssid,uint8_t*password)
     nvs_close(out_handle);
 }
 
-
-
 void joylink_check_timer_for_10_min( TimerHandle_t xTimer )
 {
-	nvs_handle out_handle;
-	wifi_config_t config;
-	size_t size;
+    nvs_handle out_handle;
+    wifi_config_t config;
+    size_t size;
     joylink_net_configuaring = false;
     ets_printf("/*----------------BLE-ADV-STOP(10min)----------------*/\n");
     esp_ble_gap_stop_advertising();
@@ -166,27 +155,26 @@ void joylink_check_timer_for_10_min( TimerHandle_t xTimer )
         joylink_check_timer_for_10_min_timer = NULL;
     }
 
-	if (nvs_open("joylink_wifi", NVS_READONLY, &out_handle) == ESP_OK) {
-		memset(&config,0x0,sizeof(config));
-		size = sizeof(config.sta.ssid);
-		if (nvs_get_str(out_handle,"ssid",(char*)config.sta.ssid,&size) == ESP_OK) {
-			if (size > 0) {
-				size = sizeof(config.sta.password);
-				if (nvs_get_str(out_handle,"password",(char*)config.sta.password,&size) == ESP_OK) {
-					esp_wifi_set_config(ESP_IF_WIFI_STA,&config);
-				    esp_wifi_connect();
-				} else {
-					printf("--get password fail");
-				}
-			}
-		} else {
-			printf("--get ssid fail");
-		}
+    if (nvs_open("joylink_wifi", NVS_READONLY, &out_handle) == ESP_OK) {
+        memset(&config,0x0,sizeof(config));
+        size = sizeof(config.sta.ssid);
+        if (nvs_get_str(out_handle,"ssid",(char*)config.sta.ssid,&size) == ESP_OK) {
+            if (size > 0) {
+                size = sizeof(config.sta.password);
+                if (nvs_get_str(out_handle,"password",(char*)config.sta.password,&size) == ESP_OK) {
+                    esp_wifi_set_config(ESP_IF_WIFI_STA,&config);
+                    esp_wifi_connect();
+                } else {
+                    printf("--get password fail");
+                }
+            }
+        } else {
+            printf("--get ssid fail");
+        }
 
-		nvs_close(out_handle);
+        nvs_close(out_handle);
     }
 }
-
 
 void joylink_delay_10_min_timer_for_10_min_start(void)
 {
@@ -207,7 +195,6 @@ void joylink_delay_10_min_timer_for_10_min_stop(void)
     }
 }
 
-
 void joylink_entry_net_config(void)
 {
     ets_printf("--joylink net config\r\n");
@@ -224,4 +211,3 @@ void esp_joylink_app_start(void)
     joylink_ble_init();
     xTaskCreate(joylink_task, "jl_task", 2048, NULL, 1, NULL);
 }
-

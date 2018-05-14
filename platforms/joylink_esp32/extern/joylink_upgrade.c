@@ -224,13 +224,6 @@ bool esp_ota_upgrade_process(const char* url)
     	ESP_JOYLINK_OTA_DEBUG("send GET request to server failed\r\n");
         goto OTA_ERROR;
     }
-#if 0
-    memset(data_buffer,0x0,TEXT_BUFFSIZE);
-    if (recv(esp_at_ota_socket_id, data_buffer, TEXT_BUFFSIZE, 0) < 0) {
-        ESP_JOYLINK_OTA_DEBUG("recv data from server failed!\r\n");
-    	goto OTA_ERROR;
-    }
-#endif
 
     // search ota partition
     partition_ptr = (esp_partition_t*)esp_ota_get_boot_partition();

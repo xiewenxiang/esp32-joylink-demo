@@ -1,4 +1,4 @@
-// Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
+// Copyright 2015-2020 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,72 +47,72 @@ static xQueueHandle cmd_evt_queue = NULL;
 static xQueueHandle cmd_resend_queue = NULL;
 
 //menufactory adv data len 
-#define JOY_ADV_MENUFAC_LEN					14
+#define JOY_ADV_MENUFAC_LEN                  14
 
 //packet offset
-#define JOY_OFFSET_FULLPACKET_SEQ			0
-#define JOY_OFFSET_FULLPACKET_OPERATE		(JOY_OFFSET_FULLPACKET_SEQ + 1)
-#define JOY_OFFSET_FULLPACKET_LENGTH		(JOY_OFFSET_FULLPACKET_OPERATE + 1)
-#define JOY_OFFSET_FULLPACKET_CONTENT		(JOY_OFFSET_FULLPACKET_LENGTH + 2)
+#define JOY_OFFSET_FULLPACKET_SEQ            0
+#define JOY_OFFSET_FULLPACKET_OPERATE        (JOY_OFFSET_FULLPACKET_SEQ + 1)
+#define JOY_OFFSET_FULLPACKET_LENGTH         (JOY_OFFSET_FULLPACKET_OPERATE + 1)
+#define JOY_OFFSET_FULLPACKET_CONTENT        (JOY_OFFSET_FULLPACKET_LENGTH + 2)
 //leghth
-#define JOY_SIZE_FULLPACKET_TAG				2
-#define JOY_SIZE_FULLPACKET_TAGLEN			1
+#define JOY_SIZE_FULLPACKET_TAG               2
+#define JOY_SIZE_FULLPACKET_TAGLEN            1
 
 //oprate
-#define JOY_OPERATE_ID_PRD					0x01	//phone read device
-#define JOY_OPERATE_ID_DRP					0x11	//data return data to phone
-#define JOY_OPERATE_ID_PWD_WITHNORES		0x02	//phone write device without response
-#define JOY_OPERATE_ID_PWD_WITHRES			0x03	//phone write device with response
-#define JOY_OPERATE_ID_DRWRES				0x13    //device return response of write cmd
+#define JOY_OPERATE_ID_PRD                    0x01    //phone read device
+#define JOY_OPERATE_ID_DRP                    0x11    //data return data to phone
+#define JOY_OPERATE_ID_PWD_WITHNORES          0x02    //phone write device without response
+#define JOY_OPERATE_ID_PWD_WITHRES            0x03    //phone write device with response
+#define JOY_OPERATE_ID_DRWRES                 0x13    //device return response of write cmd
 
-#define JOY_OPERATE_ID_DTP_WITHNORES		0x16	//device send data to phone without response
-#define JOY_OPERATE_ID_DTP_WITHRES			0x17	//device send data to phone with response
-#define JOY_OPERATE_ID_PTD_RES				0x07	//phone return response to device
+#define JOY_OPERATE_ID_DTP_WITHNORES          0x16    //device send data to phone without response
+#define JOY_OPERATE_ID_DTP_WITHRES            0x17    //device send data to phone with response
+#define JOY_OPERATE_ID_PTD_RES                0x07    //phone return response to device
 
 //property
-#define JOY_PROPERTY_TAG_PUID				0xFFFF
-#define JOY_PROPERTY_TAG_GUID				0xFFFC
-#define JOY_PROPERTY_TAG_LOCALKEY			0xFFFB
-#define JOY_PROPERTY_TAG_DEV_SNAPSHOT		0xFEFF
-#define JOY_PROPERTY_TAG_PUBKEY_APP			0xFEF9
-#define JOY_PROPERTY_TAG_PUBKEY_DEV			0xFEF8
-#define JOY_PROPERTY_TAG_SSID				0xFEF7
-#define JOY_PROPERTY_TAG_PASSWORD			0xFEF6
-#define JOY_PROPERTY_TAG_SECLEVEL			0xFEF5
-#define JOY_PROPERTY_TAG_BRAND				0xFEF4
-#define JOY_PROPERTY_TAG_CID				0xFEF3
-#define JOY_PROPERTY_TAG_BLE_DEV_CTL		0xFEF2
-#define JOY_PROPERTY_TAG_WIFI_STATUS		0xFEF1
+#define JOY_PROPERTY_TAG_PUID                0xFFFF
+#define JOY_PROPERTY_TAG_GUID                0xFFFC
+#define JOY_PROPERTY_TAG_LOCALKEY            0xFFFB
+#define JOY_PROPERTY_TAG_DEV_SNAPSHOT        0xFEFF
+#define JOY_PROPERTY_TAG_PUBKEY_APP          0xFEF9
+#define JOY_PROPERTY_TAG_PUBKEY_DEV          0xFEF8
+#define JOY_PROPERTY_TAG_SSID                0xFEF7
+#define JOY_PROPERTY_TAG_PASSWORD            0xFEF6
+#define JOY_PROPERTY_TAG_SECLEVEL            0xFEF5
+#define JOY_PROPERTY_TAG_BRAND               0xFEF4
+#define JOY_PROPERTY_TAG_CID                 0xFEF3
+#define JOY_PROPERTY_TAG_BLE_DEV_CTL         0xFEF2
+#define JOY_PROPERTY_TAG_WIFI_STATUS         0xFEF1
 
 //task command
-#define JOY_TASK_CMDID_REVDATAFINISH			0xFF01			
-#define JOY_TASK_CMDID_TEST_INDICATE			0xFF02
+#define JOY_TASK_CMDID_REVDATAFINISH            0xFF01            
+#define JOY_TASK_CMDID_TEST_INDICATE            0xFF02
 //resend task command
-#define JOY_RESENDTASK_RESENDWIFISTATUS			0xEF01	
+#define JOY_RESENDTASK_RESENDWIFISTATUS         0xEF01    
 
 
 
 //BLE service adn charicteristic UUID
-#define GATTS_SERVICE_UUID_JD_PROFILE   		0xFE70
-#define GATTS_CHAR_UUID_WRITE_JD_PROFILE    	0xFE71
+#define GATTS_SERVICE_UUID_JD_PROFILE           0xFE70
+#define GATTS_CHAR_UUID_WRITE_JD_PROFILE        0xFE71
 #define GATTS_CHAR_UUID_INDICATIE_JD_PROFILE    0xFE72
-#define GATTS_CHAR_UUID_READ_JD_PROFILE      	0xFE73
+#define GATTS_CHAR_UUID_READ_JD_PROFILE         0xFE73
 
 //response
-#define JOY_RESPONSE_OK							0x00
-#define JOY_RESPONSE_ERROR1						0x01
-#define JOY_WIFI_RECONNECT_NUM					5           //try to connect ap 32 times
+#define JOY_RESPONSE_OK                           0x00
+#define JOY_RESPONSE_ERROR1                       0x01
+#define JOY_WIFI_RECONNECT_NUM                    5           //try to connect ap 32 times
 
 //used for device indicate data to phone
-#define JOY_SDK_BUFF_LEN						512
-#define JOY_SDK_SENDBUFF_LEN					512
+#define JOY_SDK_BUFF_LEN                        512
+#define JOY_SDK_SENDBUFF_LEN                    512
 
-#define SIZE_SSID								32
-#define SIZE_PWD								32
+#define SIZE_SSID                               32
+#define SIZE_PWD                                32
 
 
-uint8_t joy_sdk_buff[JOY_SDK_BUFF_LEN] 			= {0};
-uint8_t joy_sdk_sendbuf[JOY_SDK_SENDBUFF_LEN] 	= {0};
+uint8_t joy_sdk_buff[JOY_SDK_BUFF_LEN]            = {0};
+uint8_t joy_sdk_sendbuf[JOY_SDK_SENDBUFF_LEN]     = {0};
 
 
 //used for phone write data to device(device receive data)
@@ -148,22 +148,22 @@ static uint8_t joy_uuid128_chra_read[16] = {0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 
 
 static uint8_t joy_adv_manufacture[JOY_ADV_MENUFAC_LEN]={0};
 
-#define OFFSET_RAW_ADV_MENUFAC		7
+#define OFFSET_RAW_ADV_MENUFAC        7
 
 static uint8_t raw_adv_data[] = {
-        0x02,0x01,0x06,								//le support 3
-        0x03,0x03,0x70,0xFE,						//uuid	    4
-        0x0f,0xFF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,		//menufac    16
-        0x04,0x09,'l','x','m',						//name
+        0x02,0x01,0x06,                                //le support 3
+        0x03,0x03,0x70,0xFE,                        //uuid        4
+        0x0f,0xFF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,        //menufac    16
+        0x04,0x09,'l','x','m',                        //name
         //0x02,0x0A,0xEB
 };
 
 static uint8_t raw_scan_rsp_data[] = {
-        0x02,0x01,0x06,								//le support 3
-        0x03,0x03,0x70,0xFE,						//uuid	    4
-        0x0f,0xFF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,		//menufac    16
-        0x04,0x09,'l','x','m',						//name
-        //0x02,0x0A,0xEB								//tx power
+        0x02,0x01,0x06,                                //le support 3
+        0x03,0x03,0x70,0xFE,                        //uuid        4
+        0x0f,0xFF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,        //menufac    16
+        0x04,0x09,'l','x','m',                        //name
+        //0x02,0x0A,0xEB                                //tx power
 };
 
 static esp_ble_adv_params_t test_adv_params = {
@@ -192,8 +192,8 @@ typedef enum{
 
 
 typedef enum{
-    ble_disconnect 	= 0,
-    ble_connect		= 1
+    ble_disconnect     = 0,
+    ble_connect        = 1
 }type_ble_connect_status;
 
 struct gatts_ctl_status{
@@ -256,8 +256,6 @@ void joylink_gatts_adv_data_enable(void);
 
 static xTimerHandle joylink_delay_timer = NULL;
 
-
-
 void joylink_delay_3_min_timer_for_adv_cb( TimerHandle_t xTimer )
 {
     joy_set_ble_broadcast_flag(broadcast_disable);
@@ -267,7 +265,6 @@ void joylink_delay_3_min_timer_for_adv_cb( TimerHandle_t xTimer )
         joylink_delay_timer = NULL;
     }
 }
-
 
 void joylink_delay_3_min_timer_for_adv(void)
 {
@@ -315,7 +312,7 @@ static void joy_init_adv_menufac(void)
     memcpy(joy_adv_manufacture+offset,addr_bt,6);
     offset += 6;
 
-    *(joy_adv_manufacture+offset) = 0x00 | JOY_SECRET_LEVEL;		//versec
+    *(joy_adv_manufacture+offset) = 0x00 | JOY_SECRET_LEVEL;        //versec
     offset += 1;
 
     *(joy_adv_manufacture+offset) = 0x10;   //expandtag
@@ -388,7 +385,7 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT:receive confirm\n");
 
         if (joy_gatts_ctl_status.test_mode == true) {
-        	esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SMNT_BLE);
+            esp_joylink_set_config_network(ESP_JOYLINK_CONFIG_NETWORK_SMNT_BLE);
         }
         break;
     case ESP_GATTS_CREATE_EVT:
@@ -412,8 +409,6 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         ESP_LOGI(GATTS_TAG, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d\n,char_uuid %2x\n",
                 param->add_char.status, param->add_char.attr_handle, param->add_char.service_handle,param->add_char.char_uuid.uuid.uuid16);
 
-        //add jd indicate charac
-        //if(param->add_char.char_uuid.uuid.uuid16 == GATTS_CHAR_UUID_WRITE_JD_PROFILE){
         if(0 == memcmp(param->add_char.char_uuid.uuid.uuid128,joy_uuid128_chra_write,ESP_UUID_LEN_128)){
 
             gl_profile_tab.char_handle = param->add_char.attr_handle;
@@ -423,17 +418,10 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
             esp_ble_gatts_add_char(gl_profile_tab.service_handle, &gl_profile_tab.charindicate_uuid,
                     ESP_GATT_PERM_READ,
                     ESP_GATT_PERM_READ | ESP_GATT_CHAR_PROP_BIT_INDICATE,NULL,NULL);
-
-            //}else if(param->add_char.char_uuid.uuid.uuid16 == GATTS_CHAR_UUID_INDICATIE_JD_PROFILE){
         }else if(0 == memcmp(param->add_char.char_uuid.uuid.uuid128,joy_uuid128_chra_indicate,ESP_UUID_LEN_128)){
             gl_profile_tab.charindicate_handle = param->add_char.attr_handle;
 
             gl_profile_tab.charread_uuid.len = ESP_UUID_LEN_128;
-            //memcpy(gl_profile_tab.charread_uuid.uuid.uuid128,joy_uuid128_chra_read,ESP_UUID_LEN_128);
-
-            //esp_ble_gatts_add_char(gl_profile_tab.service_handle, &gl_profile_tab.charread_uuid,
-            //						   ESP_GATT_PERM_READ,
-            //						   ESP_GATT_CHAR_PROP_BIT_READ);
         }else if(0 == memcmp(param->add_char.char_uuid.uuid.uuid128,joy_uuid128_chra_read, ESP_UUID_LEN_128)){
             gl_profile_tab.charread_handle = param->add_char.attr_handle;
             gl_profile_tab.descr_uuid.len = ESP_UUID_LEN_16;
@@ -481,7 +469,6 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         ets_printf("----------ESP_GATTS_CLOSE_EVT-------------\n");
         if(joy_get_ble_broadcast_flag() == broadcast_enble){
             joy_change_adv_wifistatus(joy_get_wifi_status());
-            //esp_ble_gap_config_adv_data(&test_adv_data);
             joylink_gatts_adv_data_enable();
             ets_printf("/*----------------CFG-ADV-DATA(CLOSE)----------------*/\n");
         }
@@ -492,11 +479,10 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         joy_gatts_ctl_status.is_indicatedata_now = 0;
         break;
     case ESP_GATTS_OPEN_EVT:
-                if(param->open.status != ESP_GATT_OK){
-                  printf("/*--------param->connect.is_connected==false--------*/\n");
-
-               }
-                break;
+        if(param->open.status != ESP_GATT_OK){
+            printf("/*--------param->connect.is_connected==false--------*/\n");
+        }
+        break;
     case ESP_GATTS_CANCEL_OPEN_EVT:
 
     case ESP_GATTS_LISTEN_EVT:
@@ -591,8 +577,8 @@ static int joy_operate_read_handler(uint8_t *cmd)
     }
     offset = JOY_OFFSET_FULLPACKET_CONTENT;
     memset(joy_sdk_sendbuf,0,sizeof(joy_sdk_sendbuf));
-    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ) 		= 0xA5;
-    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE) 	= JOY_OPERATE_ID_DRP;
+    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ)         = 0xA5;
+    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE)     = JOY_OPERATE_ID_DRP;
     offset_send = JOY_OFFSET_FULLPACKET_CONTENT;
     length_sendconetent = 0;
     while(offset < (length + JOY_OFFSET_FULLPACKET_CONTENT)){
@@ -624,7 +610,7 @@ static int joy_operate_read_handler(uint8_t *cmd)
         case JOY_PROPERTY_TAG_DEV_SNAPSHOT:
         case JOY_PROPERTY_TAG_PUBKEY_APP:
         case JOY_PROPERTY_TAG_SECLEVEL:
-        case JOY_PROPERTY_TAG_BRAND	:
+        case JOY_PROPERTY_TAG_BRAND    :
         case JOY_PROPERTY_TAG_CID:
         default:
             offset++;
@@ -642,7 +628,7 @@ static int joy_operate_read_handler(uint8_t *cmd)
         buflen = length_sendconetent + 4 + 2;
         if(buflen < JOY_SDK_BUFF_LEN){
             /*memset(joy_sdk_buff,0,sizeof(joy_sdk_buff));
-			memcpy(joy_sdk_buff,joy_sdk_sendbuf,buflen);*/
+            memcpy(joy_sdk_buff,joy_sdk_sendbuf,buflen);*/
             ESP_LOGI(GATTS_TAG, "%s [INFO]send buf len = %d, joy_adv_manufacture[12]&0x0f = 0x%02x\r\n", __func__,buflen, joy_adv_manufacture[12]&0x0f);
 
             switch(joy_adv_manufacture[12]&0x0f)
@@ -678,7 +664,6 @@ static int joy_operate_read_handler(uint8_t *cmd)
     return ret;
 }
 
-
 uint8_t try_to_start_wifi = 0;
 static int joylink_operate_write_handler(uint8_t *cmd)
 {
@@ -711,8 +696,8 @@ static int joylink_operate_write_handler(uint8_t *cmd)
     {
         ESP_LOGI(GATTS_TAG, "%s init send buffer\n", __func__);
         memset(joy_sdk_sendbuf,0,sizeof(joy_sdk_sendbuf));
-        *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ)		= seq;
-        *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE)	= JOY_OPERATE_ID_DRWRES;
+        *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ)        = seq;
+        *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE)    = JOY_OPERATE_ID_DRWRES;
         offset_send = JOY_OFFSET_FULLPACKET_CONTENT;
         length_sendconetent = 0;
     }
@@ -766,10 +751,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
 
                 value_response = JOY_RESPONSE_OK;
 
-                //gatts_start_wifi_connect();
                 try_to_start_wifi = 1;
-                //joy_change_adv_wifistatus(wifi_connecting);
-                //operate_stop_gatts = 1;
                 ESP_LOGI(GATTS_TAG, "%s rev pwdlen = %x,pwd = %s\n", __func__,tag_lc,joy_sdk_pwd_rev);
             }else{
                 value_response = JOY_RESPONSE_ERROR1;
@@ -850,7 +832,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
         case JOY_PROPERTY_TAG_DEV_SNAPSHOT:
         case JOY_PROPERTY_TAG_PUBKEY_DEV:
         case JOY_PROPERTY_TAG_SECLEVEL:
-        case JOY_PROPERTY_TAG_BRAND	:
+        case JOY_PROPERTY_TAG_BRAND    :
         case JOY_PROPERTY_TAG_CID:
         default:
             offset+=JOY_SIZE_FULLPACKET_TAG;
@@ -900,11 +882,7 @@ static int joylink_operate_write_handler(uint8_t *cmd)
             ESP_LOGI(GATTS_TAG, "%s no need to response\n", __func__);
         }
     }
-    /*
-	if(operate_stop_gatts == 1){
-		esp_ble_gatts_close(gl_profile_tab.gatts_if,
-								gl_profile_tab.conn_id);
-	}*/
+
     if(try_to_start_wifi == 1){
         ESP_LOGI(GATTS_TAG, "%s ----------start wifi-------------\n", __func__);
         esp_joylink_wifi_save_info (joy_sdk_ssid_rev,joy_sdk_pwd_rev);
@@ -913,8 +891,6 @@ static int joylink_operate_write_handler(uint8_t *cmd)
         }
         gatts_start_wifi_connect();
         joy_set_wifi_status(wifi_connecting);
-        // joylink_net_configuaring = true;
-        // joy_tell_wifi_status(wifi_connecting);
         try_to_start_wifi = 0;
     }
 
@@ -966,13 +942,6 @@ static int joylink_operate_response_handler(uint8_t *cmd)
     return ret;
 }
 
-
-/*
-static int joylink_packet_check(uint8_t *cmd)
-{
-	return 0;
-}
- */
 static int joy_notify_wifi_status(type_wifi_status sta)
 {
     int ret = -1;
@@ -982,8 +951,8 @@ static int joy_notify_wifi_status(type_wifi_status sta)
     uint16_t crc_16,buflen;
 
     memset(joy_sdk_sendbuf,0,sizeof(joy_sdk_sendbuf));
-    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ)		= seq_num++;
-    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE)	= JOY_OPERATE_ID_DTP_WITHRES;
+    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_SEQ)        = seq_num++;
+    *(joy_sdk_sendbuf + JOY_OFFSET_FULLPACKET_OPERATE)    = JOY_OPERATE_ID_DTP_WITHRES;
     offset_send = JOY_OFFSET_FULLPACKET_CONTENT;
     length_sendconetent = 0;
 
@@ -1108,8 +1077,8 @@ void joy_data_resend_task(void* arg)
 static int joy_tell_wifi_status(type_wifi_status status)
 {
     int ret = -1;
-    type_ble_broadcast_flag broadcast_flag 	= joy_get_ble_broadcast_flag();
-    type_ble_connect_status connect_flag 	= joy_get_ble_connect_status();
+    type_ble_broadcast_flag broadcast_flag     = joy_get_ble_broadcast_flag();
+    type_ble_connect_status connect_flag     = joy_get_ble_connect_status();
 
     if(connect_flag == ble_connect){
         ret = joy_notify_wifi_status(status);
@@ -1207,7 +1176,7 @@ static void joy_gatts_ctl_init(void)
 {
     memset(&joy_gatts_ctl_status,0,sizeof(joy_gatts_ctl_status));
     joy_gatts_ctl_status.ble_broadcast_flag = broadcast_enble;
-    joy_gatts_ctl_status.wifi_status		= wifi_disconnect;
+    joy_gatts_ctl_status.wifi_status        = wifi_disconnect;
 }
 
 void joylink_ble_init(void)
@@ -1355,4 +1324,3 @@ void jh_delete_semaphore()
         jh_semaphore = NULL;
     }
 }
-
