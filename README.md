@@ -28,4 +28,4 @@ Joylink SDK 相关版本信息为：
   * 进入工程目录，直接运行 make 编译
   * 通过 make flash 进行烧录，关于 ESP_IDF 的更多信息，请参考 https://github.com/espressif/esp-idf
   * 可以通过 `make menuconfig > Component config > Joylink` 来修改自己的设备信息
-  * 可以通过修改 `platforms/joylink_esp32/extern` 目录下的文件，来适配自己的设备
+  * 可以通过修改 `components/joylink_cloud/port/extern` 目录下的文件，来适配自己的设备
