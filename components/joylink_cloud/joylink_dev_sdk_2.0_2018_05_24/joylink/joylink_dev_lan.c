@@ -33,7 +33,7 @@
 
 typedef struct _u_t{
     int id;
-    int timestamp;
+    uint32_t timestamp;
 }usr_ts_t;
 
 usr_ts_t _g_UT[USR_TIMESTAMP_MAX];
@@ -68,13 +68,31 @@ joylink_util_RSHash(const char * str)
 /**
  * brief: 
  *
+ * @Returns: 
+ */
+int
+joylink_cloud_timestamp_sync_check_reset_timecache()
+{
+    static uint32_t refresh_time = 0;
+
+    if(_g_pdev->cloud_timestamp - refresh_time > 300){
+        if(_g_pdev->cloud_timestamp & 0xFFFFF  < 300){
+            refresh_time = _g_pdev->cloud_timestamp;
+            memset(_g_UT, 0, sizeof(_g_UT));
+        }
+    }
+}
+
+/**
+ * brief: 
+ *
  * @Param: id
  * @Param: timestamp
  *
  * @Returns: 
  */
 int
-joylink_is_usr_timestamp_ok(char *usr, int timestamp)
+joylink_is_usr_timestamp_ok(char *usr, uint32_t org_timestamp)
 {
     char ip[64] = {0};
     int port;
@@ -82,9 +100,12 @@ joylink_is_usr_timestamp_ok(char *usr, int timestamp)
 
     int id = joylink_util_RSHash(ip);
     int i;
-    timestamp = timestamp & 0x7FFFFFFF;
 
-    log_info("timstamp info:->%s:%d\n", usr, timestamp);
+    /*1 */
+    uint32_t timestamp = 0;
+    timestamp = org_timestamp & 0xFFFFFFFF;
+
+    log_info("timestamp info:->%s:%u\n", usr, timestamp);
     for(i=0; i < USR_TIMESTAMP_MAX; i++){
         /*update the timestamp*/
         if((_g_UT[i].id & 0x7FFFFFFF) == (id & 0x7FFFFFFF)){
@@ -93,7 +114,7 @@ joylink_is_usr_timestamp_ok(char *usr, int timestamp)
                 return 1;
             }else{
                 log_error("timstamp error:->%s\n", usr);
-                log_error("usr timestamp:%d, cache timestamp:%d\n", timestamp, _g_UT[i].timestamp);
+                log_error("usr timestamp:%u, cache timestamp:%u\n", timestamp, _g_UT[i].timestamp);
                 return 0;
             }
         }
@@ -120,7 +141,7 @@ joylink_is_usr_timestamp_ok(char *usr, int timestamp)
         }
     }
     log_error("JSon Control timstamp error: no space->%s\n", usr);
-    log_error("usr timestamp:%d, cache timestamp:%d\n", timestamp, _g_UT[i].timestamp);
+    log_error("usr timestamp:%u, cache timestamp:%u\n", timestamp, _g_UT[i].timestamp);
     /*no space to add*/
     return 0;    
 }
@@ -251,6 +272,7 @@ joylink_proc_lan_write_key(uint8_t *src, struct sockaddr_in *sin_recv, socklen_t
     uint8_t sig[64] = {0}; 
     uint8_t pubkey[33] = {0}; 
 
+    joylink_dev_get_jlp_info(&_g_pdev->jlp);
     if(_g_pdev->jlp.is_actived){
         len = joylink_packet_lan_write_key_rsp(E_RET_ERROR_DEV_ACTIVED, "dev is alread actived");
         log_error("dev is alread actived, not response write key");
@@ -542,13 +564,20 @@ joylink_proc_lan()
             break;
         case PT_SCRIPTCONTROL:
             log_debug("SCRIPT Control serial->%d", *((int*)(recPainText + 8)));
-            if(param.version == 1 &&
-                    joylink_is_usr_timestamp_ok(_g_pdev->jlp.ip,*((int*)(recPainText)))){
-                log_debug("SCRIPT Control->%s", recPainText + 12);
-                joylink_proc_lan_script_ctrl(recPainText, ret,  &sin_recv, addrlen);
+
+            int32_t biz_code = (int)(*((int *)(recPainText  + 4)));
+            if(biz_code == JL_BZCODE_GET_SNAPSHOT || biz_code == JL_BZCODE_CTRL){
+                if(param.version == 1 &&
+                        joylink_is_usr_timestamp_ok(_g_pdev->jlp.ip,*((int*)(recPainText)))){
+                    log_debug("SCRIPT Control->%s", recPainText + 12);
+                    joylink_proc_lan_script_ctrl(recPainText, ret,  &sin_recv, addrlen);
+                }else{
+                    //joylink_proc_lan_ctrl_timestamp_error_rsp(recPainText, ret,  &sin_recv, addrlen);
+                }
             }else{
-                //joylink_proc_lan_ctrl_timestamp_error_rsp(recPainText, ret,  &sin_recv, addrlen);
+                log_error("SCRIPT Control biz_code error:%d", biz_code);
             }
+
             break;
         case PT_SUB_AUTH:
             if(param.version == 1 &&
@@ -583,6 +612,7 @@ joylink_proc_lan()
                 joylink_proc_lan_sub_add(recPainText + 4, &sin_recv, addrlen);
             }
             break;
+#ifdef _AGENT_GW_
         case PT_AGENT_ADD_SUBDEV:
             if(param.version == 1 &&
                 joylink_is_usr_timestamp_ok(_g_pdev->jlp.ip,*((int*)(recPainText)))){
@@ -606,6 +636,7 @@ joylink_proc_lan()
                         &sin_recv, addrlen);
             }
         break;
+#endif
 
         default:
             break;
