@@ -4,7 +4,7 @@
 
 ifdef CONFIG_JOYLINK_ENABLE
 
-JOYLINK_SDK ?= joylink_dev_sdk_2.0_2018_04_24
+JOYLINK_SDK ?= joylink_dev_sdk_2.0_2018_05_24
 JOYLINK_SMNT ?= joylink_smnt_v3.0.11
 JOYLINK_SOFTAP ?= joylink_softap_V3.0.4
 JOYLINK_PORT ?= port

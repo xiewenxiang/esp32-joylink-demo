@@ -39,7 +39,7 @@ char  *file = "joylink_info.txt";
 
 LightManage_t _g_lightMgr = {
 	.conn_st = -1,	
-	.jlp.mac= "B2:55:44:33:22:11",
+	.jlp.mac= "A2:55:44:33:22:11",
     .jlp.devtype = E_JLDEV_TYPE_NORMAL,
     /*.jlp.devtype = E_JLDEV_TYPE_AGENT_GW,*/
     /*.jlp.devtype = E_JLDEV_TYPE_GW,*/
