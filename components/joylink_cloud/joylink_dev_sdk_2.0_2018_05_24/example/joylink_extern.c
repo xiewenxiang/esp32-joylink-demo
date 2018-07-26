@@ -355,7 +355,16 @@ joylink_dev_get_jlp_info(JLPInfo_t *jlp)
     jlp->lancon = _g_pLightMgr->jlp.lancon;
     jlp->cmd_tran_type = _g_pLightMgr->jlp.cmd_tran_type;
     jlp->version = _g_pLightMgr->jlp.version;
+
+    /**
+     *MUST TODO
+     *This jlp->mac must return the device real mac.
+     */
     strcpy(jlp->mac, _g_pLightMgr->jlp.mac);
+    /**
+     *MUST TODO
+     *This jlp->uuid must return the device real uuid.
+     */
     strcpy(jlp->uuid, _g_pLightMgr->jlp.uuid);
 
 
@@ -591,12 +600,22 @@ joylink_dev_ota_status_upload()
     strcpy(otaUpload.feedid, _g_pdev->jlp.feedid);
     strcpy(otaUpload.productuuid, _g_pdev->jlp.uuid);	
 
+    _g_pdev->jlp.is_actived = 0;
 #ifdef __MTK_7687__
     otaUpload.status = _g_fota_ctx.upgrade_status;
     otaUpload.progress = _g_fota_ctx.progress;
     strcpy(otaUpload.status_desc, joylink_fota_get_status_desc(FOTA_ERROR_CODE_NONE));
 #endif
     joylink_server_ota_status_upload_req(&otaUpload);   
+}
+
+/**
+ * brief: 
+ */
+void
+joylink_dev_set_wait_to_active()
+{
+    _g_pdev->jlp.is_actived = 0;
 }
 
 /**

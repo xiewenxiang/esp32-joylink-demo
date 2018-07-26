@@ -1,6 +1,10 @@
 include ./Makefile.rule
          
+ifeq (${AGENT_GW_EN}, yes)  
 DEPS= auth json list example joylink agent 
+else
+DEPS= auth json list example joylink
+endif
 
 STATICLIBS = $(wildcard $(TARGET_LIB)/*.a)
 SDKLIBNAME = libjoylinksdk.a

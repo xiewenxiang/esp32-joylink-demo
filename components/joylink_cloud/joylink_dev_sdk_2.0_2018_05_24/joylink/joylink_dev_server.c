@@ -115,7 +115,20 @@ joylink_server_st_init()
         return;
     }
 
-#if 0
+    ret = connect(_g_pdev->server_socket, 
+            (struct sockaddr *)&saServer,
+            sizeof(saServer));
+
+    if(ret < 0){
+        log_error("connect() server failed!:%d\n", ret);
+        close(_g_pdev->server_socket);
+        _g_pdev->server_st = 0;
+    }else{
+        _g_pdev->server_st = 1;
+    }
+    _g_pdev->hb_lost_count = 0;
+
+#if 1
     int32_t fd  = _g_pdev->server_socket;
     int32_t flags;
     if ((flags = fcntl(fd, F_GETFL)) == -1) {
@@ -127,18 +140,6 @@ joylink_server_st_init()
     }
 #endif
 
-    ret = connect(_g_pdev->server_socket, 
-            (struct sockaddr *)&saServer,
-            sizeof(saServer));
-
-    if(ret < 0){
-        log_error("connect() server failed!\n");
-        close(_g_pdev->server_socket);
-        _g_pdev->server_st = 0;
-    }else{
-        _g_pdev->server_st = 1;
-    }
-    _g_pdev->hb_lost_count = 0;
 }
 
 /**
@@ -401,6 +402,9 @@ joylink_proc_server_auth(uint8_t* recPainText)
     _g_pdev->server_st = JL_SERVER_ST_WORK;
 }
 
+extern int
+joylink_cloud_timestamp_sync_check_reset_timecache();
+
 /**
  * brief: 
  *
@@ -420,6 +424,8 @@ joylink_proc_server_hb(uint8_t* recPainText)
     if(_g_pdev->model_code_flag == 1) {
     	joylink_server_upload_modelcode_req();
     }
+
+    joylink_cloud_timestamp_sync_check_reset_timecache();
 
     if(E_JLDEV_TYPE_GW != _g_pdev->jlp.devtype){
         joylink_server_upload_req();
@@ -725,7 +731,7 @@ joylink_proc_server_ota_upload(uint8_t* json)
  * @Returns: 
  */
 int
-joylink_server_recv(int fd, char *rec_buff, int max)
+joylink_server_recv(char fd, char *rec_buff, int max)
 {
     JLPacketHead_t head;
     bzero(&head, sizeof(head));
